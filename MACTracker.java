@@ -55,6 +55,12 @@ public class MACTracker implements IOFMessageListener, IFloodlightModule {
     }
  
     @Override
+    public Map<Class<? extends IFloodlightService>, IFloodlightService> getServiceImpls() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public net.floodlightcontroller.core.IListener.Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
         Ethernet eth =
                 IFloodlightProviderService.bcStore.get(cntx,
@@ -96,10 +102,6 @@ public class MACTracker implements IOFMessageListener, IFloodlightModule {
  
     }
  
-    @Override
-    public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    
  
 }
