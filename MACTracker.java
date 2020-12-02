@@ -14,7 +14,7 @@ import java.util.Set;
 import net.floodlightcontroller.packet.Ethernet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
- 
+
 import net.floodlightcontroller.core.FloodlightContext;
 import net.floodlightcontroller.core.IOFMessageListener;
 import net.floodlightcontroller.core.IOFSwitch;
@@ -31,9 +31,7 @@ public class MACTracker implements IOFMessageListener, IFloodlightModule {
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return MACTracker.class.getSimpleName();
-
     }
  
     @Override
@@ -59,28 +57,11 @@ public class MACTracker implements IOFMessageListener, IFloodlightModule {
         // TODO Auto-generated method stub
         return null;
     }
-
-    @Override
-    public net.floodlightcontroller.core.IListener.Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
-        Ethernet eth =
-                IFloodlightProviderService.bcStore.get(cntx,
-                                            IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
- 
-        Long sourceMACHash = eth.getSourceMACAddress().getLong();
-        if (!macAddresses.contains(sourceMACHash)) {
-            macAddresses.add(sourceMACHash);
-            logger.info("MAC Address: {} seen on switch: {}",
-                    eth.getSourceMACAddress().toString(),
-                    sw.getId().toString());
-        }
-        return Command.CONTINUE;
-    }
  
     @Override
     public Collection<Class<? extends IFloodlightService>> getModuleDependencies() {
-        // TODO Auto-generated method stub
-        Collection<Class<? extends IFloodlightService>> l =
-        new ArrayList<Class<? extends IFloodlightService>>();
+
+        Collection<Class<? extends IFloodlightService>> l = new ArrayList<Class<? extends IFloodlightService>>();
         l.add(IFloodlightProviderService.class);
         return l;
 
@@ -88,20 +69,29 @@ public class MACTracker implements IOFMessageListener, IFloodlightModule {
  
     @Override
     public void init(FloodlightModuleContext context) throws FloodlightModuleException {
-        // TODO Auto-generated method stub
+
         floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
         macAddresses = new ConcurrentSkipListSet<Long>();
         logger = LoggerFactory.getLogger(MACTracker.class);
- 
+
     }
  
     @Override
     public void startUp(FloodlightModuleContext context) {
-        // TODO Auto-generated method stub
+
         floodlightProvider.addOFMessageListener(OFType.PACKET_IN, this);
- 
+
     }
  
-    
+    @Override
+    public net.floodlightcontroller.core.IListener.Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
+        Ethernet eth =IFloodlightProviderService.bcStore.get(cntx,IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
+            Long sourceMACHash = eth.getSourceMACAddress().getLong();
+            if (!macAddresses.contains(sourceMACHash)) {
+                macAddresses.add(sourceMACHash);
+                logger.info("MAC Address: {} seen on switch: {}",eth.getSourceMACAddress().toString(),sw.getId().toString());
+            }
+        return Command.CONTINUE;
+    }
  
 }
